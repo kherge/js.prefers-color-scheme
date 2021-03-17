@@ -5,6 +5,10 @@
 !/.github/
 !/.github/**
 
+# Except the scripts.
+!/scripts/
+!/scripts/**
+
 # Except the source code.
 !/src/
 !/src/**
