@@ -6,6 +6,10 @@ A simple library for programatically consuming the CSS `prefers-color-scheme` me
 // todo
 ```
 
+## Installation
+
+    npm install @kherge/prefers-color-scheme
+
 ## Requirements
 
 - ESM Compatible Browser
