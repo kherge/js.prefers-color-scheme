@@ -1,6 +1,6 @@
 # prefers-color-scheme
 
-A simple library for progratically consuming the CSS `prefers-color-scheme` media feature.
+A simple library for programatically consuming the CSS `prefers-color-scheme` media feature.
 
 ```ts
 // todo
