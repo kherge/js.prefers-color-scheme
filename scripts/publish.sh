@@ -14,10 +14,6 @@ function compare
     local LHS="$(echo "$1" | cut -d- -f1 | cut -d+ -f1 | cut -d. -f$3)"
     local RHS="$(echo "$2" | cut -d- -f1 | cut -d+ -f1 | cut -d. -f$3)"
 
-    echo "LHS: $LHS"
-    echo "RHS: $RHS"
-    echo
-
     if [ $LHS -gt $RHS ]; then
         return 0
     fi
