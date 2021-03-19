@@ -1,3 +1,5 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kherge_js.prefers-color-scheme&metric=alert_status)](https://sonarcloud.io/dashboard?id=kherge_js.prefers-color-scheme)
+
 # prefers-color-scheme
 
 A simple library for programatically consuming the CSS `prefers-color-scheme` media feature.
