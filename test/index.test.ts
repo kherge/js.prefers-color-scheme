@@ -1,32 +1,21 @@
-import { ColorScheme, getColorScheme, watchColorScheme } from '../src';
+import {
+  ColorScheme,
+  getColorScheme,
+  matchMedia,
+  watchColorScheme,
+} from '../src';
 
-let mockList: jest.Mock<Partial<Window['matchMedia']>>;
-
-beforeAll(() => {
-  mockList = jest.fn();
-
-  Object.defineProperty(window, 'matchMedia', {
-    value: mockList,
-  });
-});
-
-beforeEach(() => {
-  mockList.mockClear();
-});
+beforeEach(() => matchMedia.reset());
 
 describe('getColorScheme', () => {
   test('detects when a dark theme is preferred', () => {
-    mockList.mockImplementationOnce(() => ({
-      matches: true,
-    }));
+    matchMedia.matches(true).once();
 
     expect(getColorScheme()).toEqual(ColorScheme.Dark);
   });
 
   test('detects when a light theme is preferred', () => {
-    mockList.mockImplementationOnce(() => ({
-      matches: false,
-    }));
+    matchMedia.matches(false).once();
 
     expect(getColorScheme()).toEqual(ColorScheme.Light);
   });
@@ -34,14 +23,11 @@ describe('getColorScheme', () => {
 
 describe('watchColorScheme', () => {
   test('adds and removes a listener', () => {
-    const addEventListener = jest.fn();
-    const removeEventListener = jest.fn();
+    const addEventListener = matchMedia.addEventListener();
+    const removeEventListener = matchMedia.removeEventListener();
     const watcher = jest.fn();
 
-    mockList.mockImplementationOnce(() => ({
-      addEventListener,
-      removeEventListener,
-    }));
+    matchMedia.once();
 
     const callback = watchColorScheme(watcher);
 
@@ -60,12 +46,10 @@ describe('watchColorScheme', () => {
   });
 
   test('watcher receives changes', () => {
-    const addEventListener = jest.fn();
+    const addEventListener = matchMedia.addEventListener();
     const watcher = jest.fn();
 
-    mockList.mockImplementationOnce(() => ({
-      addEventListener,
-    }));
+    matchMedia.once();
 
     watchColorScheme(watcher);
 
