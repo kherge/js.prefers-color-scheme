@@ -1,3 +1,4 @@
+[![Quality Check](https://github.com/kherge/js.prefers-color-scheme/actions/workflows/test.yml/badge.svg)](https://github.com/kherge/js.prefers-color-scheme/actions/workflows/test.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kherge_js.prefers-color-scheme&metric=alert_status)](https://sonarcloud.io/dashboard?id=kherge_js.prefers-color-scheme)
 
 # prefers-color-scheme
