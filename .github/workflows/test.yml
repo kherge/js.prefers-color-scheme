@@ -1,4 +1,4 @@
-name: Quality Check Changes
+name: Quality Check
 
 # Run for all commits not in master.
 on:
