@@ -1,6 +1,18 @@
 {
   "name": "@kherge/prefers-color-scheme",
   "version": "0.1.0",
+  "description": "A simple library for programatically consuming the CSS prefers-color-scheme media feature.",
+  "keywords": [
+    "css",
+    "matchMedia",
+    "prefers-color-scheme"
+  ],
+  "homepage": "https://github.com/kherge/js.prefers-color-scheme",
+  "bugs": "https://github.com/kherge/js.prefers-color-scheme/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kherge/js.prefers-color-scheme.git"
+  },
   "license": "MIT",
   "author": "Kevin Herrera <kevin@herrera.io>",
   "devDependencies": {
