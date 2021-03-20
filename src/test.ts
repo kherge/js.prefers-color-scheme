@@ -1,175 +1,179 @@
 /**
- * Defines how mockMatchMedia must be built.
+ * The implementation of the specification.
+ */
+type Implementation = {
+  /**
+   * The mock to be used for `addEventListener`.
+   */
+  addEventListener: jest.Mock;
+
+  /**
+   * The value to be returned on match.
+   */
+  matches: boolean;
+
+  /**
+   * The mock to be used for `removeEventListener`.
+   */
+  removeEventListener: jest.Mock;
+};
+
+/**
+ * A function that accepts a mock specification and builds on it.
+ */
+type Specifier = (spec: Specification) => void;
+
+/**
+ * Defines how the mock `window.matchMedia` builder.
  */
 export interface Builder {
   /**
-   * Creates a new mock and sets it as the `addEventListener` method for the new implementation.
+   * Specifies the mock implementation for a single invocation.
    *
-   * If event listeners are being used with `MediaQueryList`, you will need a way to recognize
-   * that listeners as being added. This method will ensure that the `matchMedia` mock uses the
-   * generated mock function as the implementation and then return it for checking.
+   * @param specifier The mock specifier.
    *
-   * ```ts
-   * const mockAddEventListener = matchMedia.addEventListener();
-   *
-   * // ... run code ...
-   *
-   * expect(mockAddEventListener).toHaveBeenCalled();
-   * ```
-   *
-   * @return The mock.
+   * @return The implementation of the specification.
    */
-  addEventListener(): jest.Mock;
+  once(specifier?: Specifier): Implementation;
 
   /**
-   * Sets the implementation for `window.matchMedia` to be used many times.
+   * Specifies the mock implementation for all invocations.
    *
-   * Equivalent to calling `jest.mockImplementation()`.
+   * @param specifier The mock specifier.
+   *
+   * @return The implementation of the specification.
    */
-  many(): void;
+  many(specifier?: Specifier): Implementation;
 
   /**
-   * Sets the `matches` value for the new implementation.
-   *
-   * @param matches The value.
+   * Clears the mock.
    *
    * @return The builder for method chaining.
    */
-  matches(matches: boolean): Builder;
-
-  /**
-   * Sets the implementation for `window.matchMedia` to be used exactly once.
-   *
-   * Equivalent to calling `jest.mockImplementationOnce()`.
-   */
-  once(): void;
-
-  /**
-   * Creates a new mock and sets it as the `removeEventListener` method for the new implementation.
-   *
-   * ```ts
-   * const mockRemoveEventListener = matchMedia.removeEventListener();
-   *
-   * // ... run code ...
-   *
-   * expect(mockRemoveEventListener).toHaveBeenCalled();
-   * ```
-   *
-   * @return The mock.
-   */
-  removeEventListener(): jest.Mock;
-
-  /**
-   * Resets the builder state and clears the `window.matchMedia` mock.
-   */
-  reset(): void;
+  reset(): Builder;
 }
 
 /**
- * The default implementation of `Builder`.
+ * The default implementation for `Builder`.
  */
-export class DefaultBuilder implements Builder {
-  /**
-   * Initializes the new builder.
-   *
-   * @param result The result to be returned by the mock.
-   */
-  public constructor(private result: Partial<MediaQueryList> = {}) {}
+class BuilderImpl implements Builder {
+  once(specifier: Specifier): Implementation {
+    const impl = this.build(specifier);
 
-  /**
-   * Sets the addEventListener mock.
-   *
-   * @return The mock.
-   */
-  public addEventListener() {
-    return (this.result.addEventListener = jest.fn());
+    mock.mockImplementationOnce(() => impl);
+
+    return impl;
   }
 
-  /**
-   * Sets the return value using `mockImplementation`.
-   */
-  public many() {
-    mock.mockClear().mockImplementation(() => ({
-      ...this.result,
-    }));
+  many(specifier: Specifier): Implementation {
+    const impl = this.build(specifier);
+
+    mock.mockImplementation(() => impl);
+
+    return impl;
   }
 
-  /**
-   * Sets the value for `matches`.
-   *
-   * @param matches The value.
-   *
-   * @return The builder.
-   */
-  public matches(matches: boolean) {
-    this.result = {
-      ...this.result,
-      matches,
-    };
+  reset() {
+    mock.mockClear();
 
     return this;
   }
 
-  /**
-   * Sets the return value using `mockImplementationOnce`.
-   */
-  public once() {
-    mock.mockClear().mockImplementationOnce(() => ({
-      ...this.result,
-    }));
-  }
+  private build(specifier?: Specifier): Implementation {
+    const spec = new SpecificationImpl();
 
-  /**
-   * Sets the removeEventListener mock.
-   *
-   * @return The mock.
-   */
-  public removeEventListener() {
-    return (this.result.removeEventListener = jest.fn());
-  }
+    if (specifier) {
+      specifier(spec);
+    }
 
-  /**
-   * Resets the builder and the mock.
-   */
-  public reset() {
-    this.result = {};
-
-    mock.mockClear();
+    return spec.getImplementation();
   }
 }
 
 /**
- * An "implementation" of the builder where nothing is implemented.
- *
- * This class is only used if Jest is not available.
+ * The "not implemented" implementation for `Builder`.
  */
-export class NotImplemented implements Builder {
-  addEventListener(): never {
-    throw this.error();
+class NotImplemented implements Builder {
+  once(_: Specifier): never {
+    throw this.createError('once');
   }
 
-  many(): void {
-    throw this.error();
+  many(_: Specifier): never {
+    throw this.createError('many');
   }
 
-  matches(_: boolean): never {
-    throw this.error();
+  reset(): never {
+    throw this.createError('reset');
   }
 
-  once(): void {
-    throw this.error();
+  private createError(method: string): Error {
+    return new Error(`Not implemented: ${method}`);
+  }
+}
+
+/**
+ * Defines how the `window.matchMedia` mock will be implemented.
+ */
+export interface Specification {
+  /**
+   * Sets or generates the mock to be used for `addEventListener`.
+   *
+   * @param mock The mock.
+   */
+  addEventListener(mock: jest.Mock): void;
+
+  /**
+   * Sets the value for the `matches` field in the query result.
+   *
+   * @param state The value.
+   */
+  matches(state: boolean): void;
+
+  /**
+   * Sets or generates the mock to be used for `removeEventListener`.
+   *
+   * @param mock The mock.
+   */
+  removeEventListener(mock: jest.Mock): void;
+}
+
+/**
+ * Defines how the implementation of a specification is retrieved.
+ */
+interface WithImplementation {
+  /**
+   * Returns the implementation of the specification.
+   */
+  getImplementation(): Implementation;
+}
+
+/**
+ * The default implementation for `Specification`.
+ */
+class SpecificationImpl implements Specification, WithImplementation {
+  /**
+   * The implementation details.
+   */
+  private implementation: Partial<Implementation> = {};
+
+  addEventListener(mock: jest.Mock) {
+    this.implementation.addEventListener = mock;
   }
 
-  removeEventListener(): never {
-    throw this.error();
+  getImplementation() {
+    this.implementation.addEventListener ??= jest.fn();
+    this.implementation.matches ??= false;
+    this.implementation.removeEventListener ??= jest.fn();
+
+    return this.implementation as Implementation;
   }
 
-  reset(): void {
-    throw this.error();
+  matches(state: boolean) {
+    this.implementation.matches = state;
   }
 
-  private error(): Error {
-    return new Error('Not implemented.');
+  removeEventListener(mock: jest.Mock) {
+    this.implementation.removeEventListener = mock;
   }
 }
 
@@ -192,7 +196,7 @@ if (typeof jest !== 'undefined') {
     });
   }
 
-  builder = new DefaultBuilder();
+  builder = new BuilderImpl();
 } else {
   builder = new NotImplemented();
 }
