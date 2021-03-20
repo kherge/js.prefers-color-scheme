@@ -60,7 +60,7 @@ class BuilderImpl implements Builder {
   once(specifier: Specifier): Implementation {
     const impl = this.build(specifier);
 
-    mock.mockImplementationOnce(() => impl);
+    matchMock.mockImplementationOnce(() => impl);
 
     return impl;
   }
@@ -68,13 +68,13 @@ class BuilderImpl implements Builder {
   many(specifier: Specifier): Implementation {
     const impl = this.build(specifier);
 
-    mock.mockImplementation(() => impl);
+    matchMock.mockImplementation(() => impl);
 
     return impl;
   }
 
   reset() {
-    mock.mockClear();
+    matchMock.mockClear();
 
     return this;
   }
@@ -178,21 +178,21 @@ class SpecificationImpl implements Specification, WithImplementation {
 }
 
 let builder: Builder;
-let mock: jest.Mock | jest.SpyInstance;
+let matchMock: jest.Mock | jest.SpyInstance;
 
 if (typeof jest !== 'undefined') {
   /**
    * The mock `window.matchMedia` object.
    */
-  mock = jest.fn();
+  matchMock = jest.fn();
 
   // Add it to the window object.
   // @ts-ignore: Detection only valid for browser environment, not Node.
   if (window.matchMedia) {
-    mock = jest.spyOn(window, 'matchMedia');
+    matchMock = jest.spyOn(window, 'matchMedia');
   } else {
     Object.defineProperty(window, 'matchMedia', {
-      value: mock,
+      value: matchMock,
     });
   }
 
