@@ -52,5 +52,10 @@ if ! compare "$VERSION" "$LATEST" 1 && \
    exit
 fi
 
+# Create config .npmrc.
+cat - > .npmrc <<'NPMRC'
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}
+NPMRC
+
 # Publish the new version.
 npm publish --access public
