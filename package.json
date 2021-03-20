@@ -1,6 +1,6 @@
 {
   "name": "@kherge/prefers-color-scheme",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A simple library for programatically consuming the CSS prefers-color-scheme media feature.",
   "keywords": [
     "css",
