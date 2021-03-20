@@ -161,9 +161,17 @@ class SpecificationImpl implements Specification, WithImplementation {
   }
 
   getImplementation() {
-    this.implementation.addEventListener ??= jest.fn();
-    this.implementation.matches ??= false;
-    this.implementation.removeEventListener ??= jest.fn();
+    if (!this.implementation.addEventListener) {
+      this.implementation.addEventListener = jest.fn();
+    }
+
+    if (!this.implementation.matches) {
+      this.implementation.matches = false;
+    }
+
+    if (!this.implementation.removeEventListener) {
+      this.implementation.removeEventListener = jest.fn();
+    }
 
     return this.implementation as Implementation;
   }
