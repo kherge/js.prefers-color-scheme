@@ -1,6 +1,9 @@
 # Exclude everything.
 *
 
+# Except the NPM configuration.
+!/.npmrc
+
 # Except the code owners file.
 !/CODEOWNERS
 
