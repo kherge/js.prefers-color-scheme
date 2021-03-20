@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Quality Check
+    name: Tests
 
     # Use Ubuntu.
     runs-on: ubuntu-latest
