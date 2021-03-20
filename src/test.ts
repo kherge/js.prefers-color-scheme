@@ -176,7 +176,7 @@ export class NotImplemented implements Builder {
 let builder: Builder;
 let mock: jest.Mock | jest.SpyInstance;
 
-if (jest) {
+if (typeof jest !== 'undefined') {
   /**
    * The mock `window.matchMedia` object.
    */
