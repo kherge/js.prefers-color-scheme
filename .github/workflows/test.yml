@@ -1,17 +1,14 @@
-name: Quality Check Changes
+name: Quality Check
 
 # Run for all commits not in master.
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-  # Code is required to be tested before reaching master.
-  push:
-    branches-ignore:
-      - master
-
 jobs:
   build:
+    name: Quality Check
+
     # Use Ubuntu.
     runs-on: ubuntu-latest
 
@@ -29,16 +26,5 @@ jobs:
 
       # Test the project.
       - run: npm ci
-      - run: npm lint
+      - run: npm run lint
       - run: npm test -- --ci --coverage --maxWorkers=2
-
-      # Run through Sonar.
-      - uses: sonarsource/sonarcloud-github-action@master
-        with:
-          args: >
-            -Dsonar.organization=kherge-github
-            -Dsonar.projectKey=kherge_js.prefers-color-scheme
-            -Dsonar.sources=src/
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

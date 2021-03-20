@@ -50,3 +50,8 @@ export const watchColorScheme = (watcher: Watcher) => {
 
   return () => media.removeEventListener('change', listener);
 };
+
+/**
+ * Re-export testing utility.
+ */
+export { default as matchMedia } from './test';

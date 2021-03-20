@@ -1,3 +1,6 @@
+[![Quality Check](https://github.com/kherge/js.prefers-color-scheme/actions/workflows/test.yml/badge.svg)](https://github.com/kherge/js.prefers-color-scheme/actions/workflows/test.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kherge_js.prefers-color-scheme&metric=alert_status)](https://sonarcloud.io/dashboard?id=kherge_js.prefers-color-scheme)
+
 # prefers-color-scheme
 
 A simple library for programatically consuming the CSS `prefers-color-scheme` media feature.
@@ -10,6 +13,7 @@ This is an ES6 browser library written in TypeScript.
 import {
   ColorScheme,
   getColorScheme,
+  matchMedia,
   watchColorScheme,
 } from '@kherge/prefers-color-scheme';
 ```
@@ -61,6 +65,58 @@ If we want to stop listening to changes, we use the returned function.
 
 ```ts
 removeWatcher();
+```
+
+### Testing
+
+```ts
+interface Builder {
+  addEventListener(): jest.Mock;
+  many(): void;
+  matches(matches: boolean): Builder;
+  once(): void;
+  removeEventListener(): jest.Mock;
+  reset(): void;
+}
+```
+
+The `matchMedia` utility simplifies the process of using mock implementations for the
+`window.matchMedia` method (which is undefined in Node).
+
+```ts
+beforeEach(() => matchMedia.reset());
+
+describe('example tests using matchMedia', () => {
+  test('mock the return value for matches', () => {
+    matchMedia.matches(true).once();
+
+    expect(getColorScheme()).toBe(ColorScheme.Dark);
+
+    matchMedia.matches(false).once();
+
+    expect(getColorScheme()).toBe(ColorScheme.Light);
+  });
+
+  test('mock event listener management', () => {
+    const addEventListener = matchMedia.addEventListener();
+    const removeEventListener = matchMedia.removeEventListener();
+
+    matchMedia.once();
+
+    const listener = jest.fn();
+
+    const remove = watchColorScheme(listener);
+
+    expect(addEventListener).toHaveBeenCalledWith(
+      'change',
+      expect.any(Function)
+    );
+
+    remove();
+
+    expect(removeEventListener).toHaveBeenCalled();
+  });
+});
 ```
 
 ## Installation
