@@ -8,6 +8,8 @@ on:
 
 jobs:
   build:
+    name: Publish to NPM
+
     # Use Ubuntu.
     runs-on: ubuntu-latest
 
