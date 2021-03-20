@@ -9,13 +9,17 @@ beforeEach(() => matchMedia.reset());
 
 describe('getColorScheme', () => {
   test('detects when a dark theme is preferred', () => {
-    matchMedia.matches(true).once();
+    matchMedia.once(spec => {
+      spec.matches(true);
+    });
 
     expect(getColorScheme()).toEqual(ColorScheme.Dark);
   });
 
   test('detects when a light theme is preferred', () => {
-    matchMedia.matches(false).once();
+    matchMedia.once(spec => {
+      spec.matches(false);
+    });
 
     expect(getColorScheme()).toEqual(ColorScheme.Light);
   });
@@ -23,11 +27,8 @@ describe('getColorScheme', () => {
 
 describe('watchColorScheme', () => {
   test('adds and removes a listener', () => {
-    const addEventListener = matchMedia.addEventListener();
-    const removeEventListener = matchMedia.removeEventListener();
     const watcher = jest.fn();
-
-    matchMedia.once();
+    const { addEventListener, removeEventListener } = matchMedia.once();
 
     const callback = watchColorScheme(watcher);
 
@@ -46,10 +47,8 @@ describe('watchColorScheme', () => {
   });
 
   test('watcher receives changes', () => {
-    const addEventListener = matchMedia.addEventListener();
     const watcher = jest.fn();
-
-    matchMedia.once();
+    const { addEventListener } = matchMedia.once();
 
     watchColorScheme(watcher);
 

@@ -13,7 +13,6 @@ This is an ES6 browser library written in TypeScript.
 import {
   ColorScheme,
   getColorScheme,
-  matchMedia,
   watchColorScheme,
 } from '@kherge/prefers-color-scheme';
 ```
@@ -70,41 +69,66 @@ removeWatcher();
 ### Testing
 
 ```ts
+import { matchMedia } from '@kherge/prefers-color-scheme';
+
 interface Builder {
-  addEventListener(): jest.Mock;
-  many(): void;
-  matches(matches: boolean): Builder;
-  once(): void;
-  removeEventListener(): jest.Mock;
-  reset(): void;
+  once(specifier: Specifier): Implementation;
+  many(specifier: Specifier): Implementation;
+  reset(): Builder;
+}
+
+export interface Specification {
+  addEventListener(mock?: jest.Mock): void;
+  matches(state: boolean): void;
+  removeEventListener(mock?: jest.Mock): void;
 }
 ```
 
-The `matchMedia` utility simplifies the process of using mock implementations for the
-`window.matchMedia` method (which is undefined in Node).
+The `matchMedia` utility is an instance of `Builder` which simplifies the process of defining
+the mock implementation for `window.matchMedia`.
 
 ```ts
 beforeEach(() => matchMedia.reset());
 
 describe('example tests using matchMedia', () => {
   test('mock the return value for matches', () => {
-    matchMedia.matches(true).once();
+    matchMedia.once(spec => {
+      spec.matches(true);
+    });
 
     expect(getColorScheme()).toBe(ColorScheme.Dark);
 
-    matchMedia.matches(false).once();
+    matchMedia.once();
 
     expect(getColorScheme()).toBe(ColorScheme.Light);
   });
 
   test('mock event listener management', () => {
-    const addEventListener = matchMedia.addEventListener();
-    const removeEventListener = matchMedia.removeEventListener();
-
-    matchMedia.once();
+    const { addEventListener, removeEventListener } = matchMedia.once();
 
     const listener = jest.fn();
+    const remove = watchColorScheme(listener);
 
+    expect(addEventListener).toHaveBeenCalledWith(
+      'change',
+      expect.any(Function)
+    );
+
+    remove();
+
+    expect(removeEventListener).toHaveBeenCalled();
+  });
+
+  test('mock event listener management (again)', () => {
+    const addEventListener = jest.fn();
+    const removeEventListener = jest.fn();
+
+    matchMedia.once(spec => {
+      spec.addEventListener(addEventListener);
+      spec.removeEventListener(removeEventListener);
+    });
+
+    const listener = jest.fn();
     const remove = watchColorScheme(listener);
 
     expect(addEventListener).toHaveBeenCalledWith(
