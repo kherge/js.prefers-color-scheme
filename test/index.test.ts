@@ -28,10 +28,7 @@ describe('getColorScheme', () => {
 describe('watchColorScheme', () => {
   test('adds and removes a listener', () => {
     const watcher = jest.fn();
-    const { addEventListener, removeEventListener } = matchMedia.once(spec => {
-      spec.addEventListener();
-      spec.removeEventListener();
-    });
+    const { addEventListener, removeEventListener } = matchMedia.once();
 
     const callback = watchColorScheme(watcher);
 
@@ -51,9 +48,7 @@ describe('watchColorScheme', () => {
 
   test('watcher receives changes', () => {
     const watcher = jest.fn();
-    const { addEventListener } = matchMedia.once(spec => {
-      spec.addEventListener();
-    });
+    const { addEventListener } = matchMedia.once();
 
     watchColorScheme(watcher);
 
