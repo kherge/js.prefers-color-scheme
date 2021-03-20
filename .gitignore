@@ -1,6 +1,9 @@
 # Exclude everything.
 *
 
+# Except the code owners file.
+!/CODEOWNERS
+
 # Except the GitHub metadata.
 !/.github/
 !/.github/**
